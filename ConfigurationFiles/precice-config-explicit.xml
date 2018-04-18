@@ -1,0 +1,46 @@
+<?xml version="1.0"?>
+
+<precice-configuration>
+
+  <solver-interface dimensions="2">
+    
+    <data:scalar name="tempMid"/>
+    <data:scalar name="rightBound"/>
+
+    <mesh name="leftNodes">
+      <use-data name="tempMid"/>
+      <use-data name="rightBound"/>
+    </mesh>
+
+    <mesh name="rightNodes">
+      <use-data name="tempMid"/>
+      <use-data name="rightBound"/>
+    </mesh>
+    
+    <participant name="TEMPLEFT">
+      <use-mesh name="leftNodes" provide="yes"/>
+      <use-mesh name="rightNodes" from="TEMPRIGHT"/>
+      <write-data name="tempMid" mesh="leftNodes"/>
+      <read-data  name="rightBound" mesh="leftNodes"/>
+      <mapping:nearest-neighbor direction="write" from="leftNodes" to="rightNodes" constraint="consistent" timing="initial"/>
+      <mapping:nearest-neighbor direction="read"  from="rightNodes" to="leftNodes" constraint="consistent" timing="initial"/>
+    </participant>
+    
+    <participant name="TEMPRIGHT">
+      <use-mesh name="rightNodes" provide="yes"/>
+      <write-data name="rightBound" mesh="rightNodes"/>
+      <read-data  name="tempMid"  mesh="rightNodes"/>
+    </participant>
+    <m2n:sockets from="TEMPLEFT" to="TEMPRIGHT" distribution-type="gather-scatter" network="lo"/>
+
+    <coupling-scheme:serial-explicit>
+      <participants first="TEMPLEFT" second="TEMPRIGHT"/>
+      <max-time value="1"/>
+      <timestep-length value="0.01" valid-digits="8"/>
+      <exchange data="tempMid"   mesh="rightNodes"   from="TEMPLEFT" to="TEMPRIGHT" />
+      <exchange data="rightBound"  mesh="rightNodes"   from="TEMPRIGHT" to="TEMPLEFT" initialize="true"/>
+
+    </coupling-scheme:serial-explicit>
+    
+  </solver-interface>
+</precice-configuration>
