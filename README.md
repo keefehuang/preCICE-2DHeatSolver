@@ -2,6 +2,8 @@
 Developed based on preCICE library and elastictube1d example, available: https://github.com/precice, 
 for seminar: Partitioned Fluid-Structure Interaction - Summer 18
 
+LeftSolver code for both C++ and Python implementations are commented.
+
 USAGE OF 2D HEAT EQUATION SOLVER:
 
 C++ Code:
