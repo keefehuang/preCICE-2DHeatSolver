@@ -17,6 +17,9 @@
 using std::cout;
 using std::endl;
 
+// Method to print arrays. Takes in double vector, grid geometry value N and solverNum. In this case,
+// solverNum is 1 for the LeftSolver and 0 for the RightSolver because the LeftSolver updates one less
+// column.
 void printArray(std::vector<double> temp, int N, int solverNum){
 
   int row, col;
@@ -32,6 +35,17 @@ void printArray(std::vector<double> temp, int N, int solverNum){
 
 }
 
+// Arbitrary update method. Implements an implicit Euler step via pointers to double vectors.
+// temp: 		local data, 
+// temp_n:  	updated local data (two separate vectors for local data required to perform checkpointing)
+// nearBound: 	the boundary updated by respective solver. (This boundary is used as the boundary condition 
+//				for the opposing solver)
+// farBound:	boundary condition provided by the opposing solver
+// N:			value used for grid size computations
+// dt:			time-step size
+// solverNum:	1 for LeftSolver, 0 for RightSolver
+// Note: solverNum is 1 for the LeftSolver and 0 for the RightSolver because the LeftSolver updates one less
+// column.
 void heatSolver(std::vector<double> &temp, 
                     std::vector<double> &temp_n, 
                     std::vector<double> &nearBound, 
@@ -82,6 +96,9 @@ return;
 
 }
 
+// Below methods are used to write output for code. Taken from preCICE 1d-elastictube example:
+// https://github.com/precice/elastictube1d
+// Used to export scalar data.
 void exportScalarData(std::ofstream& outFile, int N_slices, double* data, std::string dataname)
 {  
   outFile << "SCALARS " << dataname << " float" << std::endl;
@@ -95,6 +112,9 @@ void exportScalarData(std::ofstream& outFile, int N_slices, double* data, std::s
   outFile << std::endl;
 }
 
+// Taken from preCICE 1d-elastictube example:
+// https://github.com/precice/elastictube1d
+// Used to export vector data.
 void exportVectorData(std::ofstream& outFile, int N_slices, double* data, const char* dataname)
 {
   outFile << "VECTORS " << dataname << " float" << std::endl;
@@ -110,6 +130,8 @@ void exportVectorData(std::ofstream& outFile, int N_slices, double* data, const 
   outFile << std::endl;          
 }
 
+// Taken from preCICE 1d-elastictube example:
+// https://github.com/precice/elastictube1d
 void initializeWriting(std::ofstream&filestream)
 {
   filestream.setf(std::ios::showpoint);
@@ -117,6 +139,8 @@ void initializeWriting(std::ofstream&filestream)
   filestream << std::setprecision(16);
 }
 
+// Taken from preCICE 1d-elastictube example:
+// https://github.com/precice/elastictube1d
 void writeHeader(std::ostream& outFile)
 {
   outFile << "# vtk DataFile Version 2.0" << std::endl << std::endl
@@ -124,6 +148,9 @@ void writeHeader(std::ostream& outFile)
           << "DATASET UNSTRUCTURED_GRID" << std::endl << std::endl;
 }
 
+
+// Taken from preCICE 1d-elastictube example:
+// https://github.com/precice/elastictube1d
 void exportMesh(std::ofstream& outFile, int N_slices, double* grid)
 {  
   outFile << "POINTS " << N_slices << " float "<<std::endl << std::endl;
@@ -138,6 +165,8 @@ void exportMesh(std::ofstream& outFile, int N_slices, double* grid)
   outFile << std::endl;
 }
 
+// Taken from preCICE 1d-elastictube example:
+// https://github.com/precice/elastictube1d
 void writeVtk(double t, int iteration, const char* filename_prefix, int N_slices, double* grid, double* templeft, double* tempright){
   std::stringstream filename_stream;
   filename_stream << filename_prefix <<"_"<< iteration <<".vtk";
@@ -159,6 +188,9 @@ void writeVtk(double t, int iteration, const char* filename_prefix, int N_slices
   outstream.close();    
 }
 
+
+// Arbitrary test code used to check the validity of heatSolver() function. 
+// Please keep commented to build LeftSolver and RightSolver
 // int main(){
 
 // 	std::vector<double> leftNodes_n((N+2)*(N+1), temp_bound), leftNodes((N+2)*(N+1),temp_bound), 
